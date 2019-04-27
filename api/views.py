@@ -6,14 +6,15 @@ import json
 import math
 
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-mydb = myclient["apple"]
+mydb = myclient["game"]
 
-mycol = mydb["data"]
+mycol = mydb["test_collection"]
 
 
 def users(request):
     page = request.GET.get('page')
     limit = request.GET.get('limit')
+    country = request.GET.get('country')
 
     if limit is None:
         limit = 10
@@ -33,7 +34,10 @@ def users(request):
         "has_more": None,
         "data" : []
     }
-    query = {}
+    if country:
+        query = {"country": country}
+    else:
+        query = {}
     data = mycol.find(query).skip(index).limit(limit)
     res = json.loads(dumps(data))
 
@@ -47,5 +51,3 @@ def users(request):
 
     api['data'] = res
     return JsonResponse(api)
-
-
